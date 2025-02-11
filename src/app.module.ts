@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HealthModule } from './health/health.module';
 import { LoggerModule } from './logger/logger.module';
 import { SmtpModule } from './smtp/smtp.module';
-import { TelegramService } from './telegram/telegram.service';
 import { TelegramModule } from './telegram/telegram.module';
 import { ConfigModule } from './config/config.module';
 import { RequestModule } from './request/request.module';
+import { EventsModule } from './events/events.module';
+import { MessagesModule } from './messages/messages.module';
+import { MongoModule } from './mongo/mongo.module';
 
 @Module({
   imports: [
@@ -17,8 +17,9 @@ import { RequestModule } from './request/request.module';
     TelegramModule,
     ConfigModule,
     RequestModule,
+    EventsModule,
+    MessagesModule,
+    MongoModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, TelegramService],
 })
 export class AppModule {}

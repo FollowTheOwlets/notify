@@ -14,7 +14,7 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly http: HttpHealthIndicator,
-    private readonly loggerProvider: LoggerProvider,
+    loggerProvider: LoggerProvider,
   ) {
     this.log = loggerProvider.createLogger(this);
   }

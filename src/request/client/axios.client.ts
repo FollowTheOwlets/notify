@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { LoggerProvider } from '~src/logger/logger.provider';
 import { LoggerService } from '~src/logger/logger.service';
@@ -7,14 +7,14 @@ import { FunctionUtils } from '~src/utils/fun.utils';
 import { IAxiosClientConfig } from '~src/request/client/types';
 
 @Injectable()
-export class AxiosClient implements OnModuleInit {
+export class AxiosClient {
   private log: LoggerService;
   private client: AxiosInstance;
   private config: IAxiosClientConfig;
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly loggerProvider: LoggerProvider,
+    loggerProvider: LoggerProvider,
   ) {
     this.log = loggerProvider.createLogger(this);
     this.config = this.configService.get('axios.config');
@@ -51,11 +51,5 @@ export class AxiosClient implements OnModuleInit {
       this.config.repeats,
       (err) => this.log.E(err.message),
     ) as Promise<AxiosResponse<T>>;
-  }
-
-  async onModuleInit(): Promise<any> {
-    this.get('/').then((res) => {
-      this.log.L(res.status + '');
-    });
   }
 }

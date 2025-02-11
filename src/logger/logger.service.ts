@@ -13,7 +13,7 @@ export class LoggerService {
   private readonly LOG_DIR = './logs';
 
   private readonly filename: string;
-  private readonly configuration: IOptions;
+  private configuration: IOptions;
   private consoleLogger: ConsoleLogger;
 
   constructor(
@@ -23,9 +23,7 @@ export class LoggerService {
   ) {
     this.consoleLogger = new ConsoleLogger(serviceName, { timestamp: true });
     this.configuration = this.configService.get('logging');
-    console.log(this.configuration);
-
-    this.filename = `${this.LOG_DIR}/${new Date().toLocaleString()}.log`;
+    this.filename = `${this.LOG_DIR}/${new Date().getTime()}.log`;
     this.createFile();
   }
 

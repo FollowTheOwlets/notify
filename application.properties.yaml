@@ -1,18 +1,34 @@
 http:
-  host: 'localhost'
-  port: 8080
+  host: <%= process.env.HOST || 'localhost' %>
+  port: <%= process.env.PORT || 3000 %>
 
 db:
   postgres:
-    url: 'localhost'
-    port: 5432
-    database: 'yaml-db'
-
-  sqlite:
-    database: 'sqlite.db'
+    url: <%= process.env.POSTGRES_URL || 'localhost' %>
+    port: <%= process.env.POSTGRES_PORT || 5432 %>
+    database: 'notify-db'
+  mongo:
+    url: mongodb://notify-mongodb:27017/notify-db
 
 logging:
   fileLogEnabled: true
   enabled:
     - health/health.controller.ts
     - health/health.service.ts
+
+axios:
+  config:
+    repeats: 3
+  client:
+
+events:
+  new-listeners: true
+  remove-listeners: true
+
+smtp:
+  mail:
+    host: <%= process.env.EMAIL_NODEMAILER_HOST || 'smtp.mail.ru' %>
+    port: <%= process.env.EMAIL_NODEMAILER_PORT || 465 %>
+    user: <%= process.env.EMAIL_NODEMAILER_USER %>
+    pass: <%= process.env.EMAIL_NODEMAILER_PASS %>
+    to: <%= process.env.EMAIL_NODEMAILER_CONSUMER || process.env.EMAIL_NODEMAILER_USER %>

@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  notify:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=development
+    dns:
+      - 8.8.8.8
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/usr/src/app
+    command: "start:dev"
+    networks:
+      - default
+    depends_on:
+      - notify-mongodb
+      - notify-redis
+  notify-redis:
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+  notify-mongodb:
+    image: 'mongo:latest'
+    container_name: 'notify-mongodb'
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data:/data/db
+    environment:
+      - MONGODB_DATABASE=notify-db
+    restart: unless-stopped
