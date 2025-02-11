@@ -1,27 +1,40 @@
 import { Controller, Get } from '@nestjs/common';
 import {
   HealthCheckService,
-  HttpHealthIndicator,
   HealthCheck,
+  MongooseHealthIndicator,
+  MemoryHealthIndicator,
+  MicroserviceHealthIndicator,
 } from '@nestjs/terminus';
-import { LoggerService } from '~src/logger/logger.service';
-import { LoggerProvider } from '~src/logger/logger.provider';
+import { RedisOptions, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('health')
 export class HealthController {
-  private log: LoggerService;
-
   constructor(
     private readonly health: HealthCheckService,
-    private readonly http: HttpHealthIndicator,
-    loggerProvider: LoggerProvider,
-  ) {
-    this.log = loggerProvider.createLogger(this);
-  }
+    private readonly db: MongooseHealthIndicator,
+    private readonly memory: MemoryHealthIndicator,
+    private microservice: MicroserviceHealthIndicator,
+    private readonly config: ConfigService,
+  ) {}
 
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([() => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com')]);
+    const memoryHeap = parseInt(this.config.get('memory-heap'));
+
+    return this.health.check([
+      () => this.db.pingCheck('mongo'),
+      () => this.memory.checkHeap('memory_heap', memoryHeap),
+      async () =>
+        this.microservice.pingCheck<RedisOptions>('redis', {
+          transport: Transport.REDIS,
+          options: {
+            host: 'localhost',
+            port: 6379,
+          },
+        }),
+    ]);
   }
 }

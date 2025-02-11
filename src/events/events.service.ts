@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { MessagesService } from '~src/messages/messages.service';
 import { LoggerProvider } from '~src/logger/logger.provider';
 import { LoggerService } from '~src/logger/logger.service';
 import { MessageEvent } from '~src/events/events/message.event';
@@ -11,14 +10,12 @@ export class EventsService {
 
   constructor(
     private readonly eventEmitter: EventEmitter2,
-    private readonly messagesService: MessagesService,
     loggerProvider: LoggerProvider,
   ) {
     this.log = loggerProvider.createLogger(this);
   }
 
   public async message(message: MessageEvent) {
-    await this.messagesService.create(message);
     await this.log.L(`Emit new message event: ${message}`);
     message.transports.forEach((transport) => {
       this.eventEmitter.emit(`message.${transport}`, message);

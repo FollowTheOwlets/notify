@@ -10,6 +10,12 @@ db:
   mongo:
     url: mongodb://notify-mongodb:27017/notify-db
 
+clients:
+  redis:
+    host: notify-redis
+    port: 6379
+    wildcards: true
+
 logging:
   fileLogEnabled: true
   enabled:
@@ -30,6 +36,8 @@ service:
     gasu-dev-service:
       transports:
         - smtp
+
+memory-heap: 100000
 
 smtp:
   mail:
