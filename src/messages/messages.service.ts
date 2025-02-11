@@ -7,11 +7,11 @@ import { MessageLevel } from '~src/messages/entity/message-level.enum';
 export class MessagesService {
   constructor(private readonly messagesRepository: MessagesRepository) {}
 
-  public async create(message: MessageEvent, level: MessageLevel) {
+  public async create(message: MessageEvent) {
     await this.messagesRepository.save({
       rqId: message.rqId,
       text: message.text,
-      level,
+      level: message.level,
     });
   }
 }

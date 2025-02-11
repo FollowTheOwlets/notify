@@ -9,5 +9,6 @@ import { LoggerModule } from '~src/logger/logger.module';
 @Module({
   imports: [ConfigModule, EventEmitterModule.forRoot(options), MessagesModule, LoggerModule],
   providers: [EventsService],
+  exports: [EventsService],
 })
 export class EventsModule {}

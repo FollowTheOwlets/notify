@@ -8,6 +8,7 @@ import { RequestModule } from './request/request.module';
 import { EventsModule } from './events/events.module';
 import { MessagesModule } from './messages/messages.module';
 import { MongoModule } from './mongo/mongo.module';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MongoModule } from './mongo/mongo.module';
     EventsModule,
     MessagesModule,
     MongoModule,
+    ApiModule,
   ],
 })
 export class AppModule {}

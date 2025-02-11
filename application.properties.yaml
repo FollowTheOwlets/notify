@@ -25,6 +25,12 @@ events:
   new-listeners: true
   remove-listeners: true
 
+service:
+  producers:
+    gasu-dev-service:
+      transports:
+        - smtp
+
 smtp:
   mail:
     host: <%= process.env.EMAIL_NODEMAILER_HOST || 'smtp.mail.ru' %>

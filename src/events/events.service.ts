@@ -4,7 +4,6 @@ import { MessagesService } from '~src/messages/messages.service';
 import { LoggerProvider } from '~src/logger/logger.provider';
 import { LoggerService } from '~src/logger/logger.service';
 import { MessageEvent } from '~src/events/events/message.event';
-import { MessageLevel } from '~src/messages/entity/message-level.enum';
 
 @Injectable()
 export class EventsService {
@@ -18,8 +17,8 @@ export class EventsService {
     this.log = loggerProvider.createLogger(this);
   }
 
-  public async message(message: MessageEvent, level: MessageLevel) {
-    await this.messagesService.create(message, level);
+  public async message(message: MessageEvent) {
+    await this.messagesService.create(message);
     await this.log.L(`Emit new message event: ${message}`);
     message.transports.forEach((transport) => {
       this.eventEmitter.emit(`message.${transport}`, message);
