@@ -45,7 +45,7 @@ export class ApiController {
       ...dto,
       rqId,
       level: MessageLevel.ERROR,
-      transports: this.config.get(`service.${systemSourceId}.transports`),
+      transports: this.config.get(`service.producers.${systemSourceId}.transports`),
     });
   }
 
@@ -59,7 +59,7 @@ export class ApiController {
       ...dto,
       rqId,
       level: MessageLevel.COMPLETED,
-      transports: this.config.get(`service.${systemSourceId}.transports`),
+      transports: this.config.get(`service.producers.${systemSourceId}.transports`),
     });
   }
 
@@ -73,7 +73,7 @@ export class ApiController {
       ...dto,
       rqId,
       level: MessageLevel.ALERT,
-      transports: this.config.get(`service.${systemSourceId}.transports`),
+      transports: this.config.get(`service.producers.${systemSourceId}.transports`),
     });
   }
 }

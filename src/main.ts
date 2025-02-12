@@ -1,10 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { RedisOptions, Transport } from '@nestjs/microservices';
 import { RedisModule } from '~src/consumers/redis/redis.module';
-import { RedisStatus } from '@nestjs/microservices/events';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,13 +20,13 @@ async function bootstrap() {
 
   SwaggerModule.setup('doc', app, documentFactory);
 
-  await app.listen(configService.get('http.port'));
-
-  const redisApp = await NestFactory.createMicroservice<MicroserviceOptions>(RedisModule, {
+  const redisApp = await NestFactory.createMicroservice<RedisOptions>(RedisModule, {
     transport: Transport.REDIS,
     options: configService.get<Record<string, any>>('clients.redis'),
   });
-
   await redisApp.listen();
+
+  await app.listen(configService.get('http.port'));
 }
+
 bootstrap();

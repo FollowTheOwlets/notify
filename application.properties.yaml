@@ -3,10 +3,6 @@ http:
   port: <%= process.env.PORT || 3000 %>
 
 db:
-  postgres:
-    url: <%= process.env.POSTGRES_URL || 'localhost' %>
-    port: <%= process.env.POSTGRES_PORT || 5432 %>
-    database: 'notify-db'
   mongo:
     url: mongodb://notify-mongodb:27017/notify-db
 
