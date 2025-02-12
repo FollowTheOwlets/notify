@@ -9,7 +9,6 @@ import { EventsModule } from './events/events.module';
 import { MessagesModule } from './messages/messages.module';
 import { MongoModule } from './mongo/mongo.module';
 import { ApiModule } from './api/api.module';
-import { RedisModule } from './consumers/redis/redis.module';
 
 @Module({
   imports: [
@@ -23,7 +22,6 @@ import { RedisModule } from './consumers/redis/redis.module';
     MessagesModule,
     MongoModule,
     ApiModule,
-    RedisModule,
   ],
 })
 export class AppModule {}

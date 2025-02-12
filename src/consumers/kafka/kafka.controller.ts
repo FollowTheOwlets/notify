@@ -1,17 +1,17 @@
 import { Controller, UseGuards } from '@nestjs/common';
-import { Ctx, MessagePattern, Payload, RedisContext } from '@nestjs/microservices';
+import { Ctx, KafkaContext, MessagePattern, Payload } from '@nestjs/microservices';
 import { EventsService } from '~src/events/events.service';
 import { ConfigService } from '@nestjs/config';
 import { LoggerProvider } from '~src/logger/logger.provider';
 import { LoggerService } from '~src/logger/logger.service';
-import { RedisMessageDto } from '~src/consumers/redis/dto/redis-message.dto';
+import { KafkaMessageDto } from '~src/consumers/kafka/dto/kafka-message.dto';
 import { MessageLevel } from '~src/messages/entity/message-level.enum';
-import { RedisSystemIncludeGuard } from '~src/consumers/redis/guard/redis-system-include.guard';
-import { RedisValidationPipe } from '~src/consumers/redis/pipe/redis-validation.pipe';
+import { KafkaSystemIncludeGuard } from '~src/consumers/kafka/guard/kafka-system-include.guard';
+import { KafkaValidationPipe } from '~src/consumers/kafka/pipe/kafka-validation.pipe';
 
-@Controller('redis')
-@UseGuards(RedisSystemIncludeGuard)
-export class RedisController {
+@Controller('kafka')
+@UseGuards(KafkaSystemIncludeGuard)
+export class KafkaController {
   private log: LoggerService;
 
   constructor(
@@ -23,7 +23,7 @@ export class RedisController {
   }
 
   @MessagePattern('notify-warning.*')
-  async handleCompleteRedisEvent(@Payload(RedisValidationPipe) dto: RedisMessageDto, @Ctx() context: RedisContext) {
+  async handleCompleteRedisEvent(@Payload(KafkaValidationPipe) dto: KafkaMessageDto, @Ctx() context: KafkaContext) {
     const systemCode = context.getArgByIndex(0).split('.')[1];
 
     await this.eventsService.message({

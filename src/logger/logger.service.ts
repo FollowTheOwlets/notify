@@ -10,9 +10,8 @@ interface IOptions {
 }
 
 export class LoggerService {
-  private readonly LOG_DIR = './logs';
-
-  private readonly filename: string;
+  private static readonly LOG_DIR = './logs';
+  private static readonly FILENAME: string = `${LoggerService.LOG_DIR}/${new Date().getTime()}.log`;
   private configuration: IOptions;
   private consoleLogger: ConsoleLogger;
 
@@ -23,8 +22,7 @@ export class LoggerService {
   ) {
     this.consoleLogger = new ConsoleLogger(serviceName, { timestamp: true });
     this.configuration = this.configService.get('logging');
-    this.filename = `${this.LOG_DIR}/${new Date().getTime()}.log`;
-    this.createFile();
+    this.createDir();
   }
 
   public async W(msg: string) {
@@ -68,19 +66,18 @@ export class LoggerService {
 
   private file(msg: string) {
     if (this.configuration.fileLogEnabled) {
-      fs.appendFileSync(this.filename, msg, 'utf-8');
+      fs.appendFileSync(LoggerService.FILENAME, msg, 'utf-8');
     }
   }
 
   private externalServer(msg: string) {
     if (this.configuration.externalLogServerEnabled) {
-      fs.appendFileSync(this.filename, msg, 'utf-8');
     }
   }
 
-  private createFile() {
-    if (!fs.existsSync(this.LOG_DIR)) {
-      fs.mkdirSync(this.LOG_DIR, { recursive: true });
+  private createDir() {
+    if (!fs.existsSync(LoggerService.LOG_DIR)) {
+      fs.mkdirSync(LoggerService.LOG_DIR, { recursive: true });
     }
   }
 }
