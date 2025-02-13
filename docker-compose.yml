@@ -19,11 +19,14 @@ services:
     depends_on:
       - notify-mongodb
       - notify-redis
-      - notify-broker
+      - notify-kafka
+      - notify-zookeeper
+
   notify-redis:
     image: 'redis:alpine'
     ports:
       - '6379:6379'
+
   notify-mongodb:
     image: 'mongo:latest'
     container_name: 'notify-mongodb'
@@ -34,25 +37,30 @@ services:
     environment:
       - MONGODB_DATABASE=notify-db
     restart: unless-stopped
-  notify-broker:
-    image: apache/kafka:latest
-    hostname: broker
-    container_name: broker
+
+  notify-zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: notify-zookeeper
     ports:
-      - 9092:9092
+      - "2181:2181"
+
+  notify-kafka:
+    image: wurstmeister/kafka:2.11-1.1.1
+    container_name: notify-kafka
+    ports:
+      - "9092:9092"
+    expose:
+      - "9094"
+    links:
+      - notify-zookeeper
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_NODE_ID: 1
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
-      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
-      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_ZOOKEEPER_CONNECT: notify-zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://172.17.0.1:9094
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_CREATE_TOPICS: "topic-test:2:2"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

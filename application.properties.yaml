@@ -11,6 +11,15 @@ clients:
     host: notify-redis
     port: 6379
     wildcards: true
+  kafka:
+    client:
+      brokers:
+        - 'notify-kafka:9092'
+      ssl: false
+      logLevel: 'INFO'
+    consumer:
+      groupId: 'notify'
+
 
 logging:
   fileLogEnabled: true
