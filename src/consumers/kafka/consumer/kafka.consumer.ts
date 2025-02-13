@@ -1,26 +1,58 @@
-import { ClientKafka, Ctx, EventPattern, KafkaContext, KafkaOptions, Payload } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
-import { Injectable, UseGuards } from '@nestjs/common';
-import { KafkaValidationPipe } from '~src/consumers/kafka/pipe/kafka-validation.pipe';
-import { KafkaMessageDto } from '~src/consumers/kafka/dto/kafka-message.dto';
-import { KafkaSystemIncludeGuard } from '~src/consumers/kafka/guard/kafka-system-include.guard';
+import {
+  Consumer,
+  ConsumerConfig,
+  ConsumerSubscribeTopic,
+  ConsumerSubscribeTopics,
+  Kafka,
+  KafkaMessage,
+  Producer,
+} from 'kafkajs';
+import { Logger } from "@nestjs/common";
+import { IConsumer } from '~src/consumers/kafka/consumer/i.consumer';
+import { FunctionUtils } from '~src/utils/fun.utils';
 
-@Injectable()
-@UseGuards(KafkaSystemIncludeGuard)
-export class KafkaConsumer {
-  private readonly kafkaClient: ClientKafka;
+export const sleep = (timeout: number) => {
+  return new Promise<void>((resolve) => setTimeout(resolve, timeout));
+};
 
-  constructor(private readonly configService: ConfigService) {
-    //this.kafkaClient = new ClientKafka(configService.get<KafkaOptions['options']>('clients.kafka'));
+export class KafkaConsumer implements IConsumer {
+  private readonly kafka: Kafka;
+  private readonly consumer: Consumer;
+  private readonly logger: Logger;
+
+  constructor(
+    private readonly topic: ConsumerSubscribeTopics,
+    config: ConsumerConfig,
+    brokers: string[]) {
+    this.kafka = new Kafka({
+      brokers
+    })
+    this.consumer = this.kafka.consumer(config);
+    this.logger = new Logger(`${topic}-${config.groupId}`)
+  }
+  async consume(onMessage: (message: KafkaMessage) => Promise<void>) {
+    await this.consumer.subscribe(this.topic)
+    await this.consumer.run({
+      eachMessage: async ({ message, partition }) => {
+        try {
+          await FunctionUtils.repeatable(async () => onMessage(message), 3, (err) => console.log(err));
+        } catch (err) {
+        }
+      },
+    })
   }
 
-  @EventPattern('topic-test')
-  async handleEvent(@Payload(KafkaValidationPipe) dto: KafkaMessageDto, @Ctx() context: KafkaContext) {
-    const originalMessage = context.getMessage();
-    const partition = context.getPartition();
-    console.log('partition', partition);
-    const { headers, timestamp } = originalMessage;
-    console.log('headers', headers);
-    console.log('timestamp', timestamp);
+  async connect() {
+    try {
+      await this.consumer.connect();
+    } catch (err) {
+      this.logger.error('Failed to connect to Kafka. trying again ...', err);
+      await sleep(5000);
+      await this.connect();
+    }
+
+  }
+  async disconnect() {
+    this.consumer.disconnect()
   }
 }
