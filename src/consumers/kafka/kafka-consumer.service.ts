@@ -1,8 +1,9 @@
-import { Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnApplicationShutdown, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { IConsumer } from '~src/consumers/kafka/consumer/i.consumer';
 import { ConfigService } from '@nestjs/config';
-import { ConsumerOptions } from '~src/consumers/kafka/options/consumer.options';
+import { ConsumerOptions } from '~src/consumers/kafka/types';
 import { KafkaConsumer } from '~src/consumers/kafka/consumer/kafka.consumer';
+import * as console from 'console';
 
 @Injectable()
 export class KafkaConsumerService implements OnApplicationShutdown, OnModuleInit {
@@ -36,6 +37,7 @@ export class KafkaConsumerService implements OnApplicationShutdown, OnModuleInit
       onMessage: (data) => {
         console.log(data);
       }
-    } as ConsumerOptions)
+    } as ConsumerOptions);
   }
+
 }

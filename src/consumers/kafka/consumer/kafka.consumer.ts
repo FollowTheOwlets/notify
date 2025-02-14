@@ -1,15 +1,9 @@
-import {
-  Consumer,
-  ConsumerConfig,
-  ConsumerSubscribeTopic,
-  ConsumerSubscribeTopics,
-  Kafka,
-  KafkaMessage,
-  Producer,
-} from 'kafkajs';
-import { Logger } from "@nestjs/common";
+import { Consumer, ConsumerConfig, ConsumerSubscribeTopics, Kafka, KafkaMessage } from 'kafkajs';
+import { Logger } from '@nestjs/common';
 import { IConsumer } from '~src/consumers/kafka/consumer/i.consumer';
 import { FunctionUtils } from '~src/utils/fun.utils';
+import { KMessage } from '~src/consumers/kafka/types';
+import { MessageHandler } from '@nestjs/microservices';
 
 export const sleep = (timeout: number) => {
   return new Promise<void>((resolve) => setTimeout(resolve, timeout));
@@ -17,29 +11,25 @@ export const sleep = (timeout: number) => {
 
 export class KafkaConsumer implements IConsumer {
   private readonly kafka: Kafka;
-  private readonly consumer: Consumer;
-  private readonly logger: Logger;
+  private readonly consumers: Consumer[];
 
   constructor(
     private readonly topic: ConsumerSubscribeTopics,
     config: ConsumerConfig,
-    brokers: string[]) {
+    brokers: string[],
+  ) {
     this.kafka = new Kafka({
-      brokers
-    })
+      brokers,
+    });
     this.consumer = this.kafka.consumer(config);
-    this.logger = new Logger(`${topic}-${config.groupId}`)
+    this.logger = new Logger(`${topic}-${config.groupId}`);
   }
-  async consume(onMessage: (message: KafkaMessage) => Promise<void>) {
-    await this.consumer.subscribe(this.topic)
+
+  async consume(onMessage: MessageHandler) {
+    await this.consumer.subscribe(this.topic);
     await this.consumer.run({
-      eachMessage: async ({ message, partition }) => {
-        try {
-          await FunctionUtils.repeatable(async () => onMessage(message), 3, (err) => console.log(err));
-        } catch (err) {
-        }
-      },
-    })
+      eachMessage: this.eachMessageWrapper(onMessage),
+    });
   }
 
   async connect() {
@@ -50,9 +40,21 @@ export class KafkaConsumer implements IConsumer {
       await sleep(5000);
       await this.connect();
     }
-
   }
+
+  private eachMessageWrapper(onMessage: MessageHandler) {
+    return async ({ message, partition }) => {
+      try {
+        await FunctionUtils.repeatable(
+          async () => onMessage(this.extractMessage(message)),
+          3,
+          (err) => console.log(err),
+        );
+      } catch (err) {}
+    };
+  }
+
   async disconnect() {
-    this.consumer.disconnect()
+    this.consumer.disconnect();
   }
 }

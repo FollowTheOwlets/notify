@@ -45,7 +45,7 @@ services:
       - "2181:2181"
 
   notify-kafka:
-    image: wurstmeister/kafka:2.11-1.1.1
+    image: wurstmeister/kafka:latest
     container_name: notify-kafka
     ports:
       - "9092:9092"
