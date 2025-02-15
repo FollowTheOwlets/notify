@@ -1,12 +1,18 @@
-import { ConsumerConfig, ConsumerSubscribeTopics, KafkaMessage } from 'kafkajs';
+import { KafkaMessage } from 'kafkajs';
+import headers from '~src/api/headers';
+import { KafkaMessageDto } from '~src/consumers/kafka/dto/kafka-message.dto';
 
-export interface KMessage {
-  headers: KafkaMessage['headers'];
+export class KMessage extends KafkaMessageDto {
+  headers: Record<(typeof headers)[keyof typeof headers], string>;
   message: string;
-}
 
-export interface ConsumerOptions {
-  topic: ConsumerSubscribeTopics;
-  config: ConsumerConfig;
-  onMessage: (message: KMessage) => Promise<void>;
+  static of(kafkaMessage: KafkaMessage): KMessage {
+    const headers: Record<string, string> = {};
+    Object.keys(kafkaMessage.headers).forEach((e) => (headers[e] = kafkaMessage.headers[e].toString()));
+    const message = kafkaMessage.value.toString();
+    return {
+      headers,
+      message,
+    };
+  }
 }

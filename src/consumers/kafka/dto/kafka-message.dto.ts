@@ -1,11 +1,6 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import headers from '~src/api/headers';
 
 export class KafkaMessageDto {
-  @IsNotEmpty()
-  @IsString()
-  text: string;
-
-  @IsNotEmpty()
-  @IsUUID()
-  rqId: string;
+  headers: Record<(typeof headers)[keyof typeof headers], string>;
+  message: string;
 }

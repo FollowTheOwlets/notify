@@ -4,16 +4,15 @@ import { CreateConsumerPacket } from '~src/consumers/kafka/factory/create-consum
 import { MessageHandler } from '~src/consumers/kafka/factory/message.handler';
 import { LoggerProvider } from '~src/logger/logger.provider';
 import { LoggerService } from '~src/logger/logger.service';
-import { FunctionUtils } from '~src/utils/fun.utils';
 
-@Injectable
+@Injectable()
 export class ConsumerFactory implements OnModuleDestroy {
   private log: LoggerService;
   private consumers: Consumer[];
 
   constructor(
     @Inject('Kafka') private readonly kafka: Kafka,
-    private readonly messageHandler: MessageHandler,
+    @Inject('MessageHandler') private readonly messageHandler: MessageHandler,
     private readonly loggerProvider: LoggerProvider,
   ) {
     this.log = loggerProvider.createLogger(this);

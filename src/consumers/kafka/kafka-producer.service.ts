@@ -1,5 +1,6 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Kafka, Producer } from 'kafkajs';
+import HEADERS from '~src/api/headers';
 
 @Injectable()
 export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
@@ -18,16 +19,14 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     try {
       await this.producer.connect();
+      const headers = {};
+      headers[HEADERS.X_SYSTEM_SOURCE_ID] = 'gasu-dev-service';
+      headers[HEADERS.X_REQUEST_ID] = '2bfb68bb-893a-423b-a7fa-7b568cad5b67';
 
       await this.sendMessage({
         topic: 'test-topic',
-        key: 'key1',
         value: 'Hello Kafka with headers from NestJS!',
-        headers: {
-          'correlation-id': '2bfb68bb-893a-423b-a7fa-7b568cad5b67',
-          'system-id': 'my-system',
-          'content-type': 'application/json',
-        },
+        headers,
       });
 
       console.log('Message sent to Kafka!');
@@ -36,17 +35,11 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async sendMessage(message: {
-    topic: string;
-    key: string;
-    value: string;
-    headers: Record<string, string>;
-  }) {
+  async sendMessage(message: { topic: string; value: string; headers: Record<string, string> }) {
     await this.producer.send({
       topic: message.topic,
       messages: [
         {
-          key: message.key,
           value: message.value,
           headers: message.headers,
         },

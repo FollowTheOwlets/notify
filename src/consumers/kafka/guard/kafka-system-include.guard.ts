@@ -1,7 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
-import { RedisContext } from '@nestjs/microservices';
+import { KMessage } from '~src/consumers/kafka/types';
+import headers from '~src/api/headers';
 
 @Injectable()
 export class KafkaSystemIncludeGuard implements CanActivate {
@@ -12,8 +13,8 @@ export class KafkaSystemIncludeGuard implements CanActivate {
   }
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const ctx = context.switchToRpc().getContext<RedisContext>();
-    const source = ctx.getArgByIndex(0).split('.')[1];
+    const ctx = context.switchToRpc().getContext<any>();
+    const source = KMessage.of(ctx.getMessage()).headers[headers.X_SYSTEM_SOURCE_ID];
     return !!this.producers[source];
   }
 }

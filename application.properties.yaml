@@ -16,7 +16,7 @@ clients:
       brokers:
         - 'notify-kafka:9092'
       ssl: false
-      logLevel: 'INFO'
+      logLevel: 'ERROR'
     consumer:
       groupId: 'notify'
 

@@ -1,8 +1,7 @@
-import { ConsumerConfig, ConsumerSubscribeTopics } from 'kafkajs';
-import { KMessage } from '~src/consumers/kafka/types';
+import { ConsumerConfig, ConsumerSubscribeTopics, EachMessagePayload } from 'kafkajs';
 
 export interface CreateConsumerPacket {
   topics: ConsumerSubscribeTopics;
   config: ConsumerConfig;
-  onMessage: (message: KMessage) => Promise<void>;
+  onMessage: (message: EachMessagePayload) => Promise<void>;
 }
