@@ -9,6 +9,7 @@ import { EventsModule } from './events/events.module';
 import { MessagesModule } from './messages/messages.module';
 import { MongoModule } from './mongo/mongo.module';
 import { ApiModule } from './api/api.module';
+import { ExampleProducersModule } from './example-producers/example-producers.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ApiModule } from './api/api.module';
     MessagesModule,
     MongoModule,
     ApiModule,
+    ExampleProducersModule,
   ],
 })
 export class AppModule {}

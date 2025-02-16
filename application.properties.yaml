@@ -13,12 +13,13 @@ clients:
     wildcards: true
   kafka:
     client:
+      clientId: 'notify'
       brokers:
         - 'notify-kafka:9092'
       ssl: false
-      logLevel: 'ERROR'
+      logLevel: 'INFO'
     consumer:
-      groupId: 'notify'
+      groupId: 'notify-consumer'
 
 
 logging:

@@ -1,34 +1,27 @@
-import { TopicListener } from '~src/consumers/kafka/metadata/decorator/topic-listener.decorator';
-import { KController } from '~src/consumers/kafka/metadata/decorator/k-controller.decorator';
-import { KMessage } from '~src/consumers/kafka/types';
-import { UseGuards } from '@nestjs/common';
+import { Controller, UseGuards, UsePipes } from '@nestjs/common';
 import { KafkaSystemIncludeGuard } from '~src/consumers/kafka/guard/kafka-system-include.guard';
 import { EventsService } from '~src/events/events.service';
 import { ConfigService } from '@nestjs/config';
-import { MessageLevel } from '~src/messages/entity/message-level.enum';
-import headers from '~src/api/headers';
-import { EachMessagePayload } from 'kafkajs';
+import { Ctx, MessagePattern } from '@nestjs/microservices';
+import { KafkaParseMessagePipe } from '~src/consumers/kafka/pipe/kafka-parse-message.pipe';
+import { KafkaMessageDto } from '~src/consumers/kafka/dto/kafka-message.dto';
 
-@KController()
+@Controller('kafka')
+@UseGuards(KafkaSystemIncludeGuard)
 export class KafkaController {
   constructor(
     private readonly eventsService: EventsService,
     private readonly config: ConfigService,
   ) {}
 
-  @TopicListener({
-    topics: ['test-topic'],
-    groupId: 'groupId',
-  })
-  @UseGuards(KafkaSystemIncludeGuard)
-  async messageHandler(payload: EachMessagePayload) {
-    const message = KMessage.of(payload.message);
-    console.log('📩 Обработано сообщение Kafka:', message);
+  @MessagePattern('notify')
+  @UsePipes(KafkaParseMessagePipe)
+  async messageHandler2(@Ctx() { message, headers, level }: KafkaMessageDto) {
     await this.eventsService.message({
-      text: message.message,
-      rqId: message.headers[headers.X_REQUEST_ID],
-      level: MessageLevel.ERROR,
-      transports: this.config.get(`service.producers.${message.headers[headers.X_SYSTEM_SOURCE_ID]}.transports`),
+      text: message,
+      rqId: headers[headers.X_REQUEST_ID],
+      level: level,
+      transports: this.config.get(`service.producers.${headers[headers.X_SYSTEM_SOURCE_ID]}.transports`),
     });
   }
 }
