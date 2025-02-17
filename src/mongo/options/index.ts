@@ -13,8 +13,8 @@ export default () => ({
     onConnectionCreate: (connection: Connection) => {
       const logger = loggerProvider.createLogger(this);
 
-      const log = (message: string) => () => logger.D(`Database: debug log \n ${message}`);
-      const warn = (message: string) => () => logger.W(`Database: warn log \n ${message}`);
+      const log = (message: string) => () => logger.debug(`Database: debug log \n ${message}`);
+      const warn = (message: string) => () => logger.warn(`Database: warn log \n ${message}`);
 
       connection.on('connected', log('connected'));
       connection.on('open', log('open'));

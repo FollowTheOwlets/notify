@@ -24,9 +24,10 @@ clients:
 
 logging:
   fileLogEnabled: true
+  jsonSerializeLevel: 3
   enabled:
-    - health/health.controller.ts
-    - health/health.service.ts
+    - events/events.service.ts
+    - consumers/kafka/kafka.controller.ts
 
 axios:
   config:
@@ -52,3 +53,8 @@ smtp:
     user: <%= process.env.EMAIL_NODEMAILER_USER %>
     pass: <%= process.env.EMAIL_NODEMAILER_PASS %>
     to: <%= process.env.EMAIL_NODEMAILER_CONSUMER || process.env.EMAIL_NODEMAILER_USER %>
+
+test:
+  producers:
+    kafka: false
+    redis: false

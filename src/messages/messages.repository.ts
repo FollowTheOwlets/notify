@@ -1,13 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Message, TMessageEntity } from '~src/messages/entity/message.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { LoggerProvider } from '~src/logger/logger.provider';
-import { LoggerService } from '~src/logger/logger.service';
 
 @Injectable()
 export class MessagesRepository {
-  private log: LoggerService;
+  private log: Logger;
 
   constructor(
     @InjectModel(Message.name) private messageModel: Model<Message>,
@@ -21,7 +20,7 @@ export class MessagesRepository {
       const created = new this.messageModel(message);
       return await created.save();
     } catch (error) {
-      await this.log.E(`Error when trying to save a message: ${message} \n ${error}`);
+      await this.log.error(`Error when trying to save a message: ${message} \n ${error}`);
     }
   }
 
@@ -29,7 +28,7 @@ export class MessagesRepository {
     try {
       return await this.messageModel.findOne<TMessageEntity>({ _id }).exec();
     } catch (error) {
-      await this.log.E(`Error when trying to find a message: ${_id} \n ${error}`);
+      await this.log.error(`Error when trying to find a message: ${_id} \n ${error}`);
     }
   }
 
@@ -37,7 +36,7 @@ export class MessagesRepository {
     try {
       return await this.messageModel.findOneAndDelete<TMessageEntity>({ _id }).exec();
     } catch (error) {
-      await this.log.E(`Error when trying to delete a message: ${_id} \n ${error}`);
+      await this.log.error(`Error when trying to delete a message: ${_id} \n ${error}`);
     }
   }
 }

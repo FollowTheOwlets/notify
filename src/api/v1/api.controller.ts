@@ -1,8 +1,7 @@
-import { Body, Controller, Headers, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, Logger, Post, UseGuards } from '@nestjs/common';
 import { EventsService } from '~src/events/events.service';
 import { MessageDto } from '~src/api/v1/dto/message.dto';
 import { LoggerProvider } from '~src/logger/logger.provider';
-import { LoggerService } from '~src/logger/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { MessageLevel } from '~src/messages/entity/message-level.enum';
 import { SystemIncludeGuard } from '~src/api/guard/system-include.guard';
@@ -11,7 +10,7 @@ import headers from '~src/api/headers';
 @Controller('api/v1')
 @UseGuards(SystemIncludeGuard)
 export class ApiController {
-  private log: LoggerService;
+  private log: Logger;
 
   constructor(
     private readonly eventsService: EventsService,

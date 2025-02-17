@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerProvider } from '~src/logger/logger.provider';
-import { LoggerService } from '~src/logger/logger.service';
 import { MessageEvent } from '~src/events/events/message.event';
 
 @Injectable()
 export class EventsService {
-  private log: LoggerService;
+  private log: Logger;
 
   constructor(
     private readonly eventEmitter: EventEmitter2,
@@ -16,7 +15,7 @@ export class EventsService {
   }
 
   public async message(message: MessageEvent) {
-    await this.log.L(`Emit new message event: ${message}`);
+    this.log.log(`Emit new message event: `, message);
     message.transports.forEach((transport) => {
       this.eventEmitter.emit(`message.${transport}`, message);
     });

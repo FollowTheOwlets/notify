@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LoggerProvider } from '~src/logger/logger.provider';
-import { LoggerService } from '~src/logger/logger.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { MessageEvent } from '~src/events/events/message.event';
@@ -8,7 +7,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class SmtpService {
-  private log: LoggerService;
+  private log: Logger;
 
   constructor(
     private readonly mailerService: MailerService,
@@ -35,15 +34,15 @@ export class SmtpService {
         html: this.messageFromEvent(message),
       };
 
-      await this.log.D(`Smtp create request: ${request}`);
+      await this.log.debug(`Smtp create request: ${request}`);
 
       const res = await this.mailerService.sendMail(request);
 
-      await this.log.D(`Smtp result: ${res}`);
+      await this.log.debug(`Smtp result: ${res}`);
 
       return res;
     } catch (e) {
-      await this.log.E(`Smtp error: ${e}`);
+      await this.log.error(`Smtp error: ${e}`);
     }
   }
 

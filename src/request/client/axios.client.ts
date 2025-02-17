@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { LoggerProvider } from '~src/logger/logger.provider';
-import { LoggerService } from '~src/logger/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { FunctionUtils } from '~src/utils/fun.utils';
 import { IAxiosClientConfig } from '~src/request/client/types';
 
 @Injectable()
 export class AxiosClient {
-  private log: LoggerService;
+  private log: Logger;
   private client: AxiosInstance;
   private config: IAxiosClientConfig;
 
@@ -25,7 +24,7 @@ export class AxiosClient {
     return FunctionUtils.repeatable(
       () => this.client.get(path),
       this.config.repeats,
-      (err) => this.log.E(err.message),
+      (err) => this.log.error(err.message),
     ) as Promise<AxiosResponse<T>>;
   }
 
@@ -33,7 +32,7 @@ export class AxiosClient {
     return FunctionUtils.repeatable(
       () => this.client.post(path, body),
       this.config.repeats,
-      (err) => this.log.E(err.message),
+      (err) => this.log.error(err.message),
     ) as Promise<AxiosResponse<T>>;
   }
 
@@ -41,7 +40,7 @@ export class AxiosClient {
     return FunctionUtils.repeatable(
       () => this.client.put(path, body),
       this.config.repeats,
-      (err) => this.log.E(err.message),
+      (err) => this.log.error(err.message),
     ) as Promise<AxiosResponse<T>>;
   }
 
@@ -49,7 +48,7 @@ export class AxiosClient {
     return FunctionUtils.repeatable(
       () => this.client.put(path, body),
       this.config.repeats,
-      (err) => this.log.E(err.message),
+      (err) => this.log.error(err.message),
     ) as Promise<AxiosResponse<T>>;
   }
 }

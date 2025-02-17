@@ -1,83 +1,87 @@
-import { ConfigService } from '@nestjs/config';
-import { ConsoleLogger } from '@nestjs/common';
-import * as fs from 'fs';
+import { ConsoleLogger, Injectable, Logger } from '@nestjs/common';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+import { IOptions } from '~src/logger/options';
+import { JsonUtils } from '~src/utils/json.utils';
 
-interface IOptions {
-  enabled: boolean;
-  fileLogEnabled: boolean;
-  externalLogServerUrl: string;
-  externalLogServerEnabled: boolean;
-}
-
-export class LoggerService {
-  private static readonly LOG_DIR = './logs';
-  private static readonly FILENAME: string = `${LoggerService.LOG_DIR}/${new Date().getTime()}.log`;
-  private configuration: IOptions;
+@Injectable()
+export class CustomLoggerService extends Logger {
+  private static readonly logFile: string = CustomLoggerService.createLogFile();
   private consoleLogger: ConsoleLogger;
+  private readonly enable: boolean;
 
   constructor(
+    private readonly configuration: IOptions,
     private readonly serviceName: string,
-    private readonly path: string,
-    private readonly configService: ConfigService,
+    pathName: string,
   ) {
+    super(serviceName);
     this.consoleLogger = new ConsoleLogger(serviceName, { timestamp: true });
-    this.configuration = this.configService.get('logging');
-    this.createDir();
+    this.enable = this.configuration.enabled.includes(pathName);
   }
 
-  public async W(msg: string) {
-    if (this.configuration.enabled) {
-      this.extLog(msg, 'WARN');
-      this.consoleLogger.warn(msg);
+  log(message: string, ...args: any[]) {
+    if (this.enable) {
+      super.log(message, args);
+      this.extLog('LOG', message, args);
     }
   }
 
-  public async D(msg: string) {
-    if (this.configuration.enabled) {
-      this.extLog(msg, 'DEBUG');
-      this.consoleLogger.debug(msg);
+  warn(message: string, ...args: any[]) {
+    if (this.enable) {
+      super.warn(message, args);
+      this.extLog('WARN', message, args);
     }
   }
 
-  public async L(msg: string) {
-    if (this.configuration.enabled) {
-      this.extLog(msg, 'LOG');
-      this.consoleLogger.log(msg);
+  debug(message: string, ...args: any[]) {
+    if (this.enable) {
+      super.debug(message, args);
+      this.extLog('DEBUG', message, args);
     }
   }
 
-  public async E(msg: string) {
-    if (this.configuration.enabled) {
-      this.extLog(msg, 'ERROR');
-      this.consoleLogger.error(msg);
+  error(message: string, ...args: any[]) {
+    if (this.enable) {
+      super.error(message, args);
+      this.extLog('ERROR', message, args);
     }
   }
 
-  private format(msg: string, logLevel: string) {
-    const time = `[ ${new Date().toLocaleString().padEnd(20, ' ')} ]`;
+  private format(logLevel: string, msg: string, ...args: any[]) {
+    const time = `[ ${new Date().toLocaleString()} ]`;
     const level = logLevel.padStart(6, ' ');
-    return `${time} ${level} [${this.serviceName}] ${msg}`;
+    const argsStr = args.map((arg) => JsonUtils.stringify(arg, this.configuration.jsonSerializeLevel));
+    return `${time} ${level} [${this.serviceName}] ${msg} ${argsStr}`;
   }
 
-  private extLog(msg: string, logLevel: string) {
-    const pattern = this.format(msg, logLevel);
-    this.file(pattern);
+  private extLog(logLevel: string, msg: string, ...args: any[]) {
+    const formattedMsg = this.format(logLevel, msg, args);
+    this.fileLog(formattedMsg);
+    this.externalServerLog(formattedMsg);
   }
 
-  private file(msg: string) {
+  private fileLog(msg: string) {
     if (this.configuration.fileLogEnabled) {
-      fs.appendFileSync(LoggerService.FILENAME, msg, 'utf-8');
+      fs.appendFileSync(CustomLoggerService.logFile, msg + '\n', 'utf-8');
     }
   }
 
-  private externalServer(msg: string) {
-    if (this.configuration.externalLogServerEnabled) {
+  private async externalServerLog(msg: string) {
+    if (this.configuration.externalLogServerEnabled && this.configuration.externalLogServerUrl) {
+      try {
+        //await axios.default.post(this.configuration.externalLogServerUrl, { message: msg });
+      } catch (error) {
+        this.consoleLogger.error(`Failed to send log to external server: ${error.message}`);
+      }
     }
   }
 
-  private createDir() {
-    if (!fs.existsSync(LoggerService.LOG_DIR)) {
-      fs.mkdirSync(LoggerService.LOG_DIR, { recursive: true });
+  private static createLogFile() {
+    const logDir = './logs';
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
     }
+    return path.join(logDir, `${Date.now()}.log`);
   }
 }
