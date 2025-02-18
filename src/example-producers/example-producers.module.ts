@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { KafkaProducerService } from '~src/example-producers/producers/kafka-producer.service';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '~src/config/config.module';
+import { ConfigModule } from '~src/core/config/config.module';
 import { ConfigService } from '@nestjs/config';
 import { RedisProducerService } from '~src/example-producers/producers/redis-producer.service';
 

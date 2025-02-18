@@ -1,9 +1,9 @@
 import { Body, Controller, Headers, Logger, Post, UseGuards } from '@nestjs/common';
-import { EventsService } from '~src/events/events.service';
+import { EventsService } from '~src/core/events/events.service';
 import { MessageDto } from '~src/api/v1/dto/message.dto';
-import { LoggerProvider } from '~src/logger/logger.provider';
+import { LoggerProvider } from '~src/core/logger/logger.provider';
 import { ConfigService } from '@nestjs/config';
-import { MessageLevel } from '~src/messages/entity/message-level.enum';
+import { MessageLevel } from '~src/core/messages/entity/message-level.enum';
 import { SystemIncludeGuard } from '~src/api/guard/system-include.guard';
 import headers from '~src/api/headers';
 

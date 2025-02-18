@@ -1,11 +1,11 @@
 import { Controller, Logger, UseGuards, UsePipes } from '@nestjs/common';
 import { KafkaSystemIncludeGuard } from '~src/consumers/kafka/guard/kafka-system-include.guard';
-import { EventsService } from '~src/events/events.service';
+import { EventsService } from '~src/core/events/events.service';
 import { ConfigService } from '@nestjs/config';
 import { Ctx, MessagePattern } from '@nestjs/microservices';
 import { KafkaParseMessagePipe } from '~src/consumers/kafka/pipe/kafka-parse-message.pipe';
 import { KafkaMessageDto } from '~src/consumers/kafka/dto/kafka-message.dto';
-import { LoggerProvider } from '~src/logger/logger.provider';
+import { LoggerProvider } from '~src/core/logger/logger.provider';
 import HEADERS from '~src/api/headers';
 
 @Controller('kafka')

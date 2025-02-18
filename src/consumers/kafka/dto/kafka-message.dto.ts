@@ -1,6 +1,6 @@
 import { KafkaMessage } from 'kafkajs';
 import headers from '~src/api/headers';
-import { MessageLevel } from '~src/messages/entity/message-level.enum';
+import { MessageLevel } from '~src/core/messages/entity/message-level.enum';
 
 export class KafkaMessageDto {
   headers: Record<(typeof headers)[keyof typeof headers], string>;

@@ -1,10 +1,10 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload, RedisContext } from '@nestjs/microservices';
-import { EventsService } from '~src/events/events.service';
+import { EventsService } from '~src/core/events/events.service';
 import { ConfigService } from '@nestjs/config';
-import { LoggerProvider } from '~src/logger/logger.provider';
+import { LoggerProvider } from '~src/core/logger/logger.provider';
 import { RedisMessageDto } from '~src/consumers/redis/dto/redis-message.dto';
-import { MessageLevel } from '~src/messages/entity/message-level.enum';
+import { MessageLevel } from '~src/core/messages/entity/message-level.enum';
 import { RedisSystemIncludeGuard } from '~src/consumers/redis/guard/redis-system-include.guard';
 import { RedisValidationPipe } from '~src/consumers/redis/pipe/redis-validation.pipe';
 

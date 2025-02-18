@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '~src/config/config.module';
-import { LoggerModule } from '~src/logger/logger.module';
-import { EventsModule } from '~src/events/events.module';
 import { KafkaController } from '~src/consumers/kafka/kafka.controller';
+import { CoreModule } from '~src/core/core.module';
 
 @Module({
-  imports: [ConfigModule, LoggerModule, EventsModule],
+  imports: [CoreModule],
   controllers: [KafkaController],
 })
 export class KafkaModule {}
