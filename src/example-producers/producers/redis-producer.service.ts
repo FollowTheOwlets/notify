@@ -1,5 +1,6 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
 export class RedisProducerService implements OnApplicationBootstrap {
@@ -8,9 +9,9 @@ export class RedisProducerService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     await this.client.connect();
     this.client.emit('notify-warning.gasu-dev-service', {
-      text: 'Hello from Redis client',
-      rqId: '2bfb68bb-893a-423b-a7fa-7b568cad5b67',
-      level: 'WARNING',
+      text: 'Test connected from RedisProducer',
+      rqId: uuidV4(),
+      level: 'ALERT',
     });
   }
 }

@@ -4,7 +4,7 @@ import * as ejs from 'ejs';
 import { join } from 'path';
 import('dotenv/config');
 
-const YAML_CONFIG_FILENAME = '../../application.properties.yaml';
+const YAML_CONFIG_FILENAME = '../../../application.properties.yaml';
 
 export default () => {
   const configTemplate = readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8');

@@ -26,8 +26,9 @@ logging:
   fileLogEnabled: true
   jsonSerializeLevel: 3
   enabled:
-    - events/events.service.ts
+    - core/events/events.service.ts
     - consumers/kafka/kafka.controller.ts
+    - core/messages/messages.service.ts
 
 axios:
   config:
@@ -40,6 +41,8 @@ events:
 
 service:
   producers:
+    gasu-dev-all:
+      transports: all
     gasu-dev-service:
       transports:
         - smtp
@@ -52,9 +55,13 @@ smtp:
     port: <%= process.env.EMAIL_NODEMAILER_PORT || 465 %>
     user: <%= process.env.EMAIL_NODEMAILER_USER %>
     pass: <%= process.env.EMAIL_NODEMAILER_PASS %>
-    to: <%= process.env.EMAIL_NODEMAILER_CONSUMER || process.env.EMAIL_NODEMAILER_USER %>
+    to-join-list: <%= process.env.EMAIL_NODEMAILER_CONSUMERS || process.env.EMAIL_NODEMAILER_USER %>
+
+telegram:
+  token: <%= process.env.TELEGRAM_TOKEN %>
+  users-id-join-list: <%= process.env.TELEGRAM_USERS %>
 
 test:
   producers:
-    kafka: false
+    kafka: true
     redis: false
