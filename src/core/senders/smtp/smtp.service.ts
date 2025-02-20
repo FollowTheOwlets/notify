@@ -33,7 +33,7 @@ export class SmtpService implements ISenderService {
           from: `<${from}>`,
           to: sendTo,
           subject: `NOTIFY`,
-          html: message.toString(),
+          html: MessageEvent.stringifySmtp(message),
         };
 
         await this.mailerService.sendMail(request);

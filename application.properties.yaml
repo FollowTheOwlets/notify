@@ -46,6 +46,7 @@ service:
     gasu-dev-service:
       transports:
         - smtp
+        - telegram
 
 memory-heap: 100000
 

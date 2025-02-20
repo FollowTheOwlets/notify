@@ -17,4 +17,12 @@ export class MessageEvent {
     return `Level: ${MessageLevel[this.level]}!
     Message: ${this.text}.`;
   }
+
+  static stringifyTelegram(event: MessageEvent) {
+    return `Level: ${MessageLevel[event.level]}!\n` + `Message: ${event.text}.`;
+  }
+
+  static stringifySmtp(event: MessageEvent) {
+    return `Level: <b>${MessageLevel[event.level]}!</b><br>` + `Message: <b>${event.text}.</b>`;
+  }
 }
