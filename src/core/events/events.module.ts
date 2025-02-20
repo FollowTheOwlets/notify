@@ -5,11 +5,16 @@ import { ConfigModule } from '~src/core/config/config.module';
 import options from '~src/core/events/options';
 import { LoggerModule } from '~src/core/logger/logger.module';
 import { MessagesModule } from '~src/core/messages/messages.module';
-import { SendersModule } from '~src/core/senders/senders.module';
 
 @Module({
-  imports: [ConfigModule, EventEmitterModule.forRoot(options), LoggerModule, MessagesModule, SendersModule],
-  providers: [EventsService],
+  imports: [ConfigModule, EventEmitterModule.forRoot(options), LoggerModule, MessagesModule],
+  providers: [
+    EventsService,
+    {
+      provide: 'SENDERS',
+      useValue: ['smtp', 'telegram'],
+    },
+  ],
   exports: [EventsService],
 })
 export class EventsModule {}

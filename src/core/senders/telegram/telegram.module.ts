@@ -8,6 +8,5 @@ import { LoggerModule } from '~src/core/logger/logger.module';
 @Module({
   imports: [ConfigModule, TelegrafModule.forRootAsync(options()), LoggerModule],
   providers: [TelegramService],
-  exports: [TelegramService],
 })
 export class TelegramModule {}

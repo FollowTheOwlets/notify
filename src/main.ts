@@ -4,6 +4,8 @@ import { Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from '~src/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { RedisModule } from '~src/consumers/redis/redis.module';
+import { KafkaModule } from '~src/consumers/kafka/kafka.module';
 
 async function bootstrapMicroservice(
   moduleCls: any,
@@ -32,8 +34,8 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, documentFactory);
 
-  //await bootstrapMicroservice(RedisModule, Transport.REDIS, configService, 'clients.redis');
-  //await bootstrapMicroservice(KafkaModule, Transport.KAFKA, configService, 'clients.kafka');
+  await bootstrapMicroservice(RedisModule, Transport.REDIS, configService, 'clients.redis');
+  await bootstrapMicroservice(KafkaModule, Transport.KAFKA, configService, 'clients.kafka');
 
   await app.listen(configService.get('http.port'));
 }

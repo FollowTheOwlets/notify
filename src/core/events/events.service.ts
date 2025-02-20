@@ -1,9 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerProvider } from '~src/core/logger/logger.provider';
 import { MessageEvent } from '~src/core/events/events/message.event';
 import { MessagesService } from '~src/core/messages/messages.service';
-import { ISenderService } from '~src/core/senders/interface/i.sender.service';
 
 @Injectable()
 export class EventsService {
@@ -12,7 +11,7 @@ export class EventsService {
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly messagesService: MessagesService,
-    private readonly senders: ISenderService[],
+    @Inject('SENDERS') private readonly senders: string[],
     loggerProvider: LoggerProvider,
   ) {
     this.log = loggerProvider.createLogger(this);
@@ -23,7 +22,7 @@ export class EventsService {
     await this.messagesService.create(message);
 
     if (typeof message.transports === 'string' && message.transports === 'all') {
-      this.senders.forEach((e) => e.send(message));
+      this.senders.forEach((transport) => this.eventEmitter.emit(`message.${transport}`, message));
     }
 
     if (typeof message.transports !== 'string') {

@@ -8,6 +8,5 @@ import { LoggerModule } from '~src/core/logger/logger.module';
 @Module({
   imports: [MailerModule.forRootAsync(options()), ConfigModule, LoggerModule],
   providers: [SmtpService],
-  exports: [SmtpService],
 })
 export class SmtpModule {}
